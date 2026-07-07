@@ -10,7 +10,7 @@ DAGS_DIR = Path(__file__).resolve().parent.parent / "dags"
 
 @pytest.fixture(scope="session")
 def dagbag() -> DagBag:
-    return DagBag(dag_folder=str(DAGS_DIR), include_examples=False)
+    return DagBag(dag_folder=str(DAGS_DIR))
 
 
 def test_no_import_errors(dagbag: DagBag) -> None:
@@ -23,8 +23,10 @@ def test_expected_dag_is_present(dagbag: DagBag) -> None:
 
 def test_pipeline_task_order(dagbag: DagBag) -> None:
     dag = dagbag.dags["dbt_duckdb_pipeline"]
-    task_ids = [t.task_id for t in dag.topological_sort()]
-    assert task_ids == ["dbt_seed", "dbt_run", "dbt_test", "dbt_docs_generate"]
+    assert dag.get_task("dbt_seed").downstream_task_ids == {"dbt_run"}
+    assert dag.get_task("dbt_run").downstream_task_ids == {"dbt_test"}
+    assert dag.get_task("dbt_test").downstream_task_ids == {"dbt_docs_generate"}
+    assert dag.get_task("dbt_docs_generate").downstream_task_ids == set()
 
 
 def test_dag_has_no_cycles_and_retries(dagbag: DagBag) -> None:
