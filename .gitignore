@@ -21,3 +21,4 @@ standalone_admin_password.txt
 # os / editor
 .DS_Store
 Thumbs.db
+.user.yml
