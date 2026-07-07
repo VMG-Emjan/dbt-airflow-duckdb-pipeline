@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Cleaned customer records from the raw seed."
+    columns:
+      - name: customer_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: country
+        tests:
+          - not_null
+
+  - name: stg_orders
+    description: "Cleaned order records from the raw seed."
+    columns:
+      - name: order_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+      - name: status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['completed', 'shipped', 'returned', 'cancelled']
+
+  - name: stg_payments
+    description: "Cleaned payment records from the raw seed."
+    columns:
+      - name: payment_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+      - name: payment_method
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['credit_card', 'bank_transfer', 'coupon', 'gift_card']

@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  dbt-build:
+    name: dbt build (DuckDB warehouse)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements-dbt.txt
+
+      - name: Install dbt
+        run: pip install -r requirements-dbt.txt
+
+      - name: dbt seed
+        run: dbt seed --project-dir . --profiles-dir .
+
+      - name: dbt run
+        run: dbt run --project-dir . --profiles-dir .
+
+      - name: dbt test
+        run: dbt test --project-dir . --profiles-dir .
+
+      - name: dbt docs generate
+        run: dbt docs generate --project-dir . --profiles-dir .
+
+      - name: Query warehouse (smoke test)
+        run: python scripts/query_warehouse.py
+
+      - name: Upload dbt docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-docs
+          path: |
+            target/index.html
+            target/catalog.json
+            target/manifest.json
+
+  airflow-dag-validation:
+    name: Airflow DAG validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements-airflow.txt
+
+      - name: Install Airflow (with constraints)
+        run: >
+          pip install -r requirements-airflow.txt
+          -c "https://raw.githubusercontent.com/apache/airflow/constraints-3.3.0/constraints-${PYTHON_VERSION}.txt"
+
+      - name: Run DAG import tests
+        env:
+          AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+        run: pytest tests_dag/ -v
+
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Ruff check
+        run: ruff check dags/ scripts/ tests_dag/

@@ -1,0 +1,16 @@
+customer_id,first_name,last_name,country,signup_date
+1,Alice,Johnson,US,2025-01-05
+2,Burak,Yilmaz,TR,2025-01-12
+3,Clara,Meier,DE,2025-01-20
+4,Deniz,Kaya,TR,2025-02-02
+5,Emma,Brown,UK,2025-02-11
+6,Felix,Wagner,DE,2025-02-18
+7,Grace,Lee,US,2025-03-01
+8,Hasan,Demir,TR,2025-03-09
+9,Isabella,Rossi,IT,2025-03-15
+10,Jonas,Schmidt,DE,2025-03-22
+11,Kate,Wilson,UK,2025-04-03
+12,Leyla,Aydin,TR,2025-04-10
+13,Marco,Bianchi,IT,2025-04-19
+14,Nina,Novak,PL,2025-04-27
+15,Omar,Ali,UK,2025-05-06

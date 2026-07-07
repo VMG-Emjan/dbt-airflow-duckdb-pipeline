@@ -1,0 +1,22 @@
+name: "data_eng_mini_proof"
+version: "1.0.0"
+config-version: 2
+
+profile: "data_eng_mini_proof"
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  data_eng_mini_proof:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

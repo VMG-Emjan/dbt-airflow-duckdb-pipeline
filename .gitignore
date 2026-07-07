@@ -1,0 +1,23 @@
+# dbt
+target/
+dbt_packages/
+logs/
+
+# warehouse (keep the directory, ignore the database files)
+warehouse/*
+!warehouse/.gitkeep
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# airflow
+airflow.db
+airflow.cfg
+standalone_admin_password.txt
+
+# os / editor
+.DS_Store
+Thumbs.db

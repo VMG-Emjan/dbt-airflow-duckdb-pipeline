@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: "Order fact table with payment totals joined in."
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: order_total
+        description: "Sum of all payments for the order, 0 if unpaid."
+        tests:
+          - not_null
+
+  - name: dim_customers
+    description: "Customer dimension with order history aggregates."
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: lifetime_value
+        tests:
+          - not_null
+
+  - name: rpt_monthly_revenue
+    description: "Monthly revenue report over completed and shipped orders."
+    columns:
+      - name: revenue_month
+        tests:
+          - unique
+          - not_null
